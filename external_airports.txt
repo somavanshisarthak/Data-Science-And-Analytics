@@ -1,0 +1,6 @@
+ATL,Hartsfield-Jackson Atlanta Int’l,Atlanta,Georgia
+LAX,Los Angeles International,Los Angeles,California
+ORD,O’Hare International,Chicago,Illinois
+PFW,Dallas/Fort Worth Int'l,Dallas/Fort Worth, Texas
+DEN,Denver International,Denver,Colorado
+JFK,John F. Kennedy Int’l,New York,New York
