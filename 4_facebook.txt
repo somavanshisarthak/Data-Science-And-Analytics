@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+
+data = pd.read_csv('dataset_Facebook.csv', delimiter=';')
+
+subset1 = data[['Type','Category','Post Month']]
+print(subset1.head())
+
+subset2 = data[['comment', 'like']]
+print(subset2.head())
+
+merged = pd.concat([subset1,subset2], axis=1)
+print(merged)
+
+sorted_data = merged.sort_values(by='comment', ascending=False)
+print(sorted_data)
+
+print(merged.T)
+
+print(data.shape)
+
+arr = np.array(data[['Post Month','Post Weekday']].head(6))
+print(arr)
+
+new = arr.reshape(3,4)
+print(new)

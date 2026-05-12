@@ -1,0 +1,69 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PowerTransformer
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+
+data = pd.read_csv('AirQuality.csv', delimiter=';')
+
+data.drop(columns=['Date', 'Time', 'Unnamed: 15', 'Unnamed: 16'], inplace=True)
+
+cols_to_fix = ['CO(GT)', 'C6H6(GT)', 'T', 'RH', 'AH']
+
+for col in cols_to_fix:
+    data[col] = data[col].str.replace(',', '.').astype(float)
+
+data.dropna(inplace=True)
+
+data.drop_duplicates(inplace=True, ignore_index=True)
+
+def remove_outliers(data, column, lower=0.01, upper=0.99):
+    low = data[column].quantile(lower)
+    high = data[column].quantile(upper)
+    return data[(data[column] >= low) & (data[column] <= high)]
+
+df = data.copy()
+
+for col in df.columns:
+    df = remove_outliers(df, col)
+
+df = df.reset_index(drop=True)
+
+pt = PowerTransformer(method='yeo-johnson')
+df = pd.DataFrame(pt.fit_transform(df), columns=df.columns)
+
+print(df.isnull().sum())
+print(df.dtypes)
+
+X = df.drop('AH', axis=1)
+Y = df['AH']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, Y, train_size=0.8, random_state=6, shuffle=True
+)
+
+lr_model = LinearRegression()
+lr_model.fit(X_train, y_train)
+lr_pred = lr_model.predict(X_test)
+
+dt_model = DecisionTreeRegressor()
+dt_model.fit(X_train, y_train)
+dt_pred = dt_model.predict(X_test)
+
+def evaluate_model(name, y_true, y_pred):
+    r2 = r2_score(y_true, y_pred)
+    mae = mean_absolute_error(y_true, y_pred)
+    mse = mean_squared_error(y_true, y_pred)
+
+    print(f'\n{name} Model:')
+    print(f'R2 Score: {r2:.4f}')
+    print(f'MAE: {mae:.4f}')
+    print(f'MSE: {mse:.4f}')
+    print(f'Accuracy (%) : {r2 * 100:.2f}%')
+
+evaluate_model('Linear Regression', y_test, lr_pred)
+evaluate_model('Decision Tree Regressor', y_test, dt_pred)

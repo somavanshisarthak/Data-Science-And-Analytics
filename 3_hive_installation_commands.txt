@@ -1,0 +1,59 @@
+# Hive Installation Commands with Comments
+
+# 1. Copy Hive archive to /usr/local
+sudo cp apache-hive-1.2.2-bin.tar.gz /usr/local/
+
+# 2. Move into /usr/local directory
+cd /usr/local
+
+# 3. Extract the Hive tar.gz archive
+sudo tar -xvzf apache-hive-1.2.2-bin.tar.gz
+
+# 4. Rename extracted folder to simple name 'hive'
+sudo mv apache-hive-1.2.2-bin hive
+
+# 5. Open bashrc file to add Hive environment variables
+nano ~/.bashrc
+
+# Add the following lines inside ~/.bashrc
+export HIVE_HOME=/usr/local/hive
+export PATH=$PATH:$HIVE_HOME/bin
+
+# 6. Reload bashrc changes
+source ~/.bashrc
+
+# 7. Start Hadoop Distributed File System (HDFS)
+start-dfs.sh
+
+# 8. Start YARN services
+start-yarn.sh
+
+# 9. Create Hive warehouse directory in HDFS
+hdfs dfs -mkdir -p /user/hive/warehouse
+
+# 10. Create temporary Hive directory in HDFS
+hdfs dfs -mkdir -p /tmp/hive
+
+# 11. Give full permissions to /tmp
+hdfs dfs -chmod 777 /tmp
+
+# 12. Give full permissions to Hive warehouse
+hdfs dfs -chmod 777 /user/hive/warehouse
+
+# 13. Give full permissions to Hive temp directory
+hdfs dfs -chmod 777 /tmp/hive
+
+# 14. Give execute/read permissions to Hive folder
+sudo chmod -R 755 /usr/local/hive
+
+# 15. Change ownership of Hive directory to current user
+sudo chown -R parallels:parallels /usr/local/hive
+
+# 16. Move into Hive binary folder
+cd /usr/local/hive/bin
+
+# 17. Initialize Hive schema using Derby database
+./schematool -initSchema -dbType derby
+
+# 18. Start Hive shell
+./hive
